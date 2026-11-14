@@ -1,0 +1,45 @@
+[package]
+name = "otg-ep0-race-repro"
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+publish = false
+
+[features]
+# Control run: do not start the interrupt-level load.
+no-load = []
+
+[dependencies]
+# embassy main. `firmware-fixed/` builds this same source against main plus the proposed fix.
+embassy-stm32 = { git = "https://github.com/embassy-rs/embassy", rev = "798395ddab842137845179a7d78cf28913b28d42", features = [
+    "defmt",
+    "stm32f429zi",
+    "memory-x",
+    "time-driver-any",
+] }
+embassy-executor = { git = "https://github.com/embassy-rs/embassy", rev = "798395ddab842137845179a7d78cf28913b28d42", features = [
+    "platform-cortex-m",
+    "executor-thread",
+    "executor-interrupt",
+    "defmt",
+] }
+embassy-time = { git = "https://github.com/embassy-rs/embassy", rev = "798395ddab842137845179a7d78cf28913b28d42", features = [
+    "defmt",
+    "defmt-timestamp-uptime",
+    "tick-hz-1_000_000",
+] }
+embassy-usb = { git = "https://github.com/embassy-rs/embassy", rev = "798395ddab842137845179a7d78cf28913b28d42", features = ["defmt"] }
+embassy-futures = { git = "https://github.com/embassy-rs/embassy", rev = "798395ddab842137845179a7d78cf28913b28d42" }
+
+defmt = "1.0.1"
+defmt-rtt = "1.0.0"
+panic-probe = { version = "1.0.0", features = ["print-defmt"] }
+
+cortex-m = { version = "0.7.7", features = ["inline-asm", "critical-section-single-core"] }
+cortex-m-rt = "0.7.5"
+
+[profile.release]
+debug = 2
+lto = "fat"
+codegen-units = 1
+opt-level = 3
